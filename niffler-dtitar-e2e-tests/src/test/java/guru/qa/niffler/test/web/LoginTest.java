@@ -8,11 +8,7 @@ import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 
 @WebTest
-public class LoginTest {
-
-  private static final String DEFAULT_PASSWORD = "123123ee";
-  private static final Config CFG = Config.getInstance();
-  private static final Faker faker = new Faker();
+public class LoginTest extends BaseTest{
 
   @Test
   void mainPageShouldBeDisplayedAfterSuccessLogin() {
