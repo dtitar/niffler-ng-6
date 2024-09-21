@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.enums.NifflerUser;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.SpendJson;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 @WebTest
 public class SpendingWebTest extends BaseTest {
+    private static final NifflerUser stan = NifflerUser.STAN;
 
     @Spending(
             username = "stan",
@@ -22,7 +24,7 @@ public class SpendingWebTest extends BaseTest {
         final String newDescription = "Обучение Niffler Next Generation";
 
         Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .successLogin("stan", "123123ee")
+                .successLogin(stan.getUsername(), stan.getPassword())
                 .editSpending(spend.description())
                 .setNewSpendingDescription(newDescription)
                 .save();
