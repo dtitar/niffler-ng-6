@@ -23,8 +23,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                          .ifPresent(annotation -> {
                              CategoryJson createdCategory = spendApiClient.createCategory(new CategoryJson(
                                      UUID.randomUUID(),
-                                     faker.country()
-                                          .name(),
+                                     annotation.name().isBlank() ? faker.country().name() : annotation.name(),
                                      annotation.username(),
                                      false));
                              if (annotation.archived()) {
@@ -48,7 +47,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     }
 
     @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    public CategoryJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         return extensionContext.getStore(NAMESPACE)
                                .get(extensionContext.getUniqueId(), CategoryJson.class);
     }
