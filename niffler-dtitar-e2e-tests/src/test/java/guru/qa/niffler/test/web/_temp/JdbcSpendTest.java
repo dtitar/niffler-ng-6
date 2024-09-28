@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.UUID;
 
-public class JdbcTest {
+public class JdbcSpendTest {
 
     protected static final Faker faker = new Faker();
+    private final SpendDbClient spendDbClient = new SpendDbClient();
 
     @Test
     void createSpendTest() {
-        SpendDbClient spendDbClient = new SpendDbClient();
         SpendJson spend = spendDbClient.createSpend(new SpendJson(
                 null,
                 new Date(),
@@ -34,25 +34,21 @@ public class JdbcTest {
                 NifflerUser.ERIC.getUsername()
         ));
         System.out.println(spend);
-
     }
 
     @Test
     void findSpendByIdTest() {
-        SpendDbClient spendDbClient = new SpendDbClient();
         System.out.println(spendDbClient.findSpendById(UUID.fromString("e482e1bc-7226-49ff-aff5-271c271a96a5")));
     }
 
     @Test
     void findAllSpendsByUsernameTest() {
-        SpendDbClient spendDbClient = new SpendDbClient();
         spendDbClient.findAllByUsername(NifflerUser.ERIC.getUsername())
                      .forEach(System.out::println);
     }
 
     @Test
     void deleteSpendTest() {
-        SpendDbClient spendDbClient = new SpendDbClient();
         SpendJson spend = spendDbClient.createSpend(new SpendJson(
                 null,
                 new Date(),
@@ -69,14 +65,12 @@ public class JdbcTest {
 
     @Test
     void findAllCategoriesByUsernameTest() {
-        SpendDbClient spendDbClient = new SpendDbClient();
         spendDbClient.findAllCategoriesByUsername(NifflerUser.ERIC.getUsername())
                      .forEach(System.out::println);
     }
 
     @Test
     void deleteCategoryTest() throws InterruptedException {
-        SpendDbClient spendDbClient = new SpendDbClient();
         CategoryJson createdCategory = spendDbClient.createCategory(new CategoryJson(
                 null,
                 faker.country()
