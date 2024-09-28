@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @ExtendWith({
     BrowserExtension.class,
-    UsersQueueExtension.class
 })
 public @interface WebTest {
 }
