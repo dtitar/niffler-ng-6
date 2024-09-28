@@ -82,4 +82,23 @@ public class JdbcSpendTest {
         int deletedRows = spendDbClient.deleteCategory(CategoryEntity.fromJson(createdCategory));
         System.out.println(deletedRows);
     }
+
+    @Test
+    void updateCategoryTest() {
+        CategoryJson createdCategory = spendDbClient.createCategory(new CategoryJson(
+                null,
+                faker.country()
+                     .name(),
+                NifflerUser.ERIC.getUsername(),
+                false
+        ));
+        System.out.println(createdCategory);
+        CategoryJson updatedCategory = spendDbClient.updateCategory(new CategoryJson(
+                createdCategory.id(),
+                createdCategory.name(),
+                createdCategory.username(),
+                true
+        ));
+        System.out.println(updatedCategory);
+    }
 }

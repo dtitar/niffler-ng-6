@@ -61,4 +61,9 @@ public class SpendDbClient {
     public int deleteCategory(CategoryEntity category) {
         return categoryDao.deleteCategory(category);
     }
+
+    public CategoryJson updateCategory(CategoryJson category) {
+        return CategoryJson.fromEntity(categoryDao.updateCategory(CategoryEntity.fromJson(category))
+                                                .orElseThrow(() -> new RuntimeException("Category not found")));
+    }
 }
