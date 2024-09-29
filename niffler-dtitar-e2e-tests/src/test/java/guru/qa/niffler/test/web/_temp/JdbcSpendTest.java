@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web._temp;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.enums.NifflerUser;
 import guru.qa.niffler.model.CategoryJson;
@@ -79,7 +78,7 @@ public class JdbcSpendTest {
                 false
         ));
         System.out.println(createdCategory);
-        int deletedRows = spendDbClient.deleteCategory(CategoryEntity.fromJson(createdCategory));
+        int deletedRows = spendDbClient.deleteCategory(createdCategory);
         System.out.println(deletedRows);
     }
 
