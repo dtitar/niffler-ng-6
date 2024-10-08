@@ -31,9 +31,14 @@ public class Databases {
     }
 
     public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+        return transaction(function, jdbcUrl, Connection.TRANSACTION_READ_COMMITTED);
+    }
+
+    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, int isolationLvl) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
+            connection.setTransactionIsolation(isolationLvl);
             connection.setAutoCommit(false);
             T result = function.apply(connection);
             connection.commit();
@@ -75,9 +80,14 @@ public class Databases {
     }
 
     public static void transaction(Consumer<Connection> consumer, String jdbcUrl) {
+        transaction(consumer, jdbcUrl, Connection.TRANSACTION_READ_COMMITTED);
+    }
+
+    public static void transaction(Consumer<Connection> consumer, String jdbcUrl, int isolationLvl) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
+            connection.setTransactionIsolation(isolationLvl);
             connection.setAutoCommit(false);
             consumer.accept(connection);
             connection.commit();
