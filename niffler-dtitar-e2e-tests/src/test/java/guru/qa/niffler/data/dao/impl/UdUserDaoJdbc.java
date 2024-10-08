@@ -1,6 +1,5 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserdataUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
@@ -12,11 +11,10 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserdataUserDaoJdbc implements UserdataUserDao {
-    private static final Config CFG = Config.getInstance();
+public class UdUserDaoJdbc implements UserdataUserDao {
     private final Connection connection;
 
-    public UserdataUserDaoJdbc(Connection connection) {
+    public UdUserDaoJdbc(Connection connection) {
         this.connection = connection;
     }
 
@@ -96,16 +94,5 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
             throw new RuntimeException(e);
         }
         return Optional.empty();
-    }
-
-    @Override
-    public int delete(UserEntity user) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "DELETE FROM \"user\" WHERE id = ?")) {
-            ps.setObject(1, user.getId());
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

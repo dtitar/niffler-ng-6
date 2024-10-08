@@ -27,8 +27,6 @@ public class SpendDbClient {
                                return SpendJson.fromEntity(new SpendDaoJdbc(connection).create(spendEntity));
                            },
                            CFG.spendJdbcUrl());
-
-
     }
 
     public SpendJson findSpendById(UUID id) {
