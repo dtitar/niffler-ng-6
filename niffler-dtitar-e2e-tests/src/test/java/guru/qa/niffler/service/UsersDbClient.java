@@ -2,9 +2,7 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.Databases;
-import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoJdbc;
-import guru.qa.niffler.data.dao.impl.AuthUserDaoJdbc;
-import guru.qa.niffler.data.dao.impl.UdUserDaoJdbc;
+import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
@@ -16,12 +14,42 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.Databases.transaction;
-import static guru.qa.niffler.data.Databases.xaTransaction;
+import static guru.qa.niffler.data.Databases.*;
 
 public class UsersDbClient {
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+    public UserJson createUserSpringJdbc(UserJson user) {
+        AuthUserEntity authUser = new AuthUserEntity();
+        authUser.setUsername(user.username());
+        authUser.setPassword(pe.encode("123123ee"));
+        authUser.setEnabled(true);
+        authUser.setAccountNonExpired(true);
+        authUser.setAccountNonLocked(true);
+        authUser.setCredentialsNonExpired(true);
+
+        AuthUserEntity createdAuthUser = new AuthUserDaoSpringJdbc(dataSource(CFG.authJdbcUrl())
+        ).create(authUser);
+
+        AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values())
+                                                    .map(a -> {
+                                                             AuthorityEntity ae = new AuthorityEntity();
+                                                             ae.setUserId(createdAuthUser.getId());
+                                                             ae.setAuthority(a);
+                                                             return ae;
+                                                         }
+                                                    )
+                                                    .toArray(AuthorityEntity[]::new);
+
+        new AuthAuthorityDaoSpringJdbc(dataSource(CFG.authJdbcUrl())
+        ).create(authorityEntities);
+
+        return UserJson.fromEntity(
+                new UdUserDaoSpringJdbc(dataSource(CFG.userdataJdbcUrl()))
+                        .create(UserEntity.fromJson(user)), null
+        );
+    }
 
     public UserJson createUser(UserJson user, String userPassword) {
         return UserJson.fromEntity(
@@ -61,13 +89,14 @@ public class UsersDbClient {
                                 },
                                 CFG.userdataJdbcUrl()
                         )
-                ));
+                ),
+                null);
     }
 
     public UserJson findById(UUID id) {
         return transaction(connection -> {
             return new UdUserDaoJdbc(connection).findById(id)
-                                                .map(UserJson::fromEntity)
+                                                .map(u -> UserJson.fromEntity(u, null))
                                                 .orElseThrow(() -> new RuntimeException(String.format("User with provided id '%s' not found", id.toString())));
         }, CFG.spendJdbcUrl());
     }
@@ -75,7 +104,7 @@ public class UsersDbClient {
     public UserJson findByUsername(String username) {
         return transaction(connection -> {
             return new UdUserDaoJdbc(connection).findByUsername(username)
-                                                .map(UserJson::fromEntity)
+                                                .map(u -> UserJson.fromEntity(u, null))
                                                 .orElseThrow(() -> new RuntimeException(String.format("User with provided username '%s' not found", username)));
         }, CFG.spendJdbcUrl());
     }
