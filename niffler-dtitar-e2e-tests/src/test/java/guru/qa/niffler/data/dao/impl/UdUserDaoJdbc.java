@@ -60,14 +60,14 @@ public class UdUserDaoJdbc implements UdUserDao {
                     ue.setSurname(rs.getString("surname"));
                     ue.setPhoto(rs.getBytes("photo"));
                     ue.setPhotoSmall(rs.getBytes("photo_small"));
-                    ue.setFullName(rs.getString("full_name"));
                     return Optional.of(ue);
+                } else {
+                    return Optional.empty();
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return Optional.empty();
     }
 
     @Override
@@ -86,7 +86,6 @@ public class UdUserDaoJdbc implements UdUserDao {
                     ue.setSurname(rs.getString("surname"));
                     ue.setPhoto(rs.getBytes("photo"));
                     ue.setPhotoSmall(rs.getBytes("photo_small"));
-                    ue.setFullName(rs.getString("full_name"));
                     return Optional.of(ue);
                 }
             }
