@@ -1,4 +1,4 @@
-package guru.qa.niffler.test.web._temp;
+package guru.qa.niffler.test.db;
 
 import com.github.javafaker.Faker;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
@@ -12,19 +12,18 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.UUID;
 
-public class JdbcSpendTest {
+public class SpringJdbcSpendTest {
 
     protected static final Faker faker = new Faker();
     private final SpendDbClient spendDbClient = new SpendDbClient();
 
     @Test
-    void createSpendTest() {
-        SpendJson spend = spendDbClient.createSpend(new SpendJson(
+    void createSpendSpringJdbcTest() {
+        SpendJson spend = spendDbClient.createSpendSpringJdbc(new SpendJson(
                 null,
                 new Date(),
                 new CategoryJson(null,
-                                 faker.country()
-                                      .name(),
+                                 "category-spring-jdbc-3",
                                  NifflerUser.ERIC.getUsername(),
                                  false),
                 CurrencyValues.RUB,
@@ -37,40 +36,37 @@ public class JdbcSpendTest {
 
     @Test
     void findSpendByIdTest() {
-        System.out.println(spendDbClient.findSpendById(UUID.fromString("e482e1bc-7226-49ff-aff5-271c271a96a5")));
+        System.out.println(spendDbClient.findSpendByIdSpringJdbc(UUID.fromString("e482e1bc-7226-49ff-aff5-271c271a96a5")));
     }
 
     @Test
     void findAllSpendsByUsernameTest() {
-        spendDbClient.findAllByUsername(NifflerUser.ERIC.getUsername())
+        spendDbClient.findAllByUsernameSpringJdbc(NifflerUser.ERIC.getUsername())
                      .forEach(System.out::println);
     }
 
     @Test
     void deleteSpendTest() {
-        SpendJson spend = spendDbClient.createSpend(new SpendJson(
+        SpendJson spend = spendDbClient.createSpendSpringJdbc(new SpendJson(
                 null,
                 new Date(),
-                spendDbClient.findCategoryByUsernameAndCategoryName(NifflerUser.ERIC.getUsername(), "food"),
+                new CategoryJson(null,
+                                 "category-spring-jdbc-5",
+                                 NifflerUser.ERIC.getUsername(),
+                                 false),
                 CurrencyValues.RUB,
                 100.0,
-                "Burgers",
+                "Holiday",
                 NifflerUser.ERIC.getUsername()
         ));
         System.out.println(spend);
-        int deletedRows = spendDbClient.deleteSpend(SpendEntity.fromJson(spend));
+        int deletedRows = spendDbClient.deleteSpendSpringJdbc(SpendEntity.fromJson(spend));
         System.out.println(deletedRows);
     }
 
     @Test
-    void findAllCategoriesByUsernameTest() {
-        spendDbClient.findAllCategoriesByUsername(NifflerUser.ERIC.getUsername())
-                     .forEach(System.out::println);
-    }
-
-    @Test
-    void deleteCategoryTest() throws InterruptedException {
-        CategoryJson createdCategory = spendDbClient.createCategory(new CategoryJson(
+    void deleteCategoryTest() {
+        CategoryJson createdCategory = spendDbClient.createCategorySpringJdbc(new CategoryJson(
                 null,
                 faker.country()
                      .name(),
@@ -78,13 +74,13 @@ public class JdbcSpendTest {
                 false
         ));
         System.out.println(createdCategory);
-        int deletedRows = spendDbClient.deleteCategory(createdCategory);
+        int deletedRows = spendDbClient.deleteCategorySpringJdbc(createdCategory);
         System.out.println(deletedRows);
     }
 
     @Test
     void updateCategoryTest() {
-        CategoryJson createdCategory = spendDbClient.createCategory(new CategoryJson(
+        CategoryJson createdCategory = spendDbClient.createCategorySpringJdbc(new CategoryJson(
                 null,
                 faker.country()
                      .name(),
@@ -99,5 +95,17 @@ public class JdbcSpendTest {
                 true
         ));
         System.out.println(updatedCategory);
+    }
+
+    @Test
+    void findAllCategoriesSpringJdbcTest() {
+        spendDbClient.findAllCategoriesSpringJdbc()
+                     .forEach(System.out::println);
+    }
+
+    @Test
+    void findAllSpendsSpringJdbcTest() {
+        spendDbClient.findAllSpendsSpringJdbc()
+                     .forEach(System.out::println);
     }
 }
