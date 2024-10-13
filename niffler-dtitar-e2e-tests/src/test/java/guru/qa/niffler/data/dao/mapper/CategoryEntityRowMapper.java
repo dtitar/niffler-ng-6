@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class CategoryEntityRowMapper implements RowMapper<CategoryEntity> {
 
-    public static final CategoryEntityRowMapper instance = new CategoryEntityRowMapper();
+    public static final CategoryEntityRowMapper INSTANCE = new CategoryEntityRowMapper();
 
     private CategoryEntityRowMapper() {
     }

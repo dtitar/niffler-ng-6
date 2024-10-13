@@ -15,7 +15,7 @@ import static guru.qa.niffler.data.Databases.dataSource;
 
 public class SpendEntityRowMapper implements RowMapper<SpendEntity> {
 
-    public static final SpendEntityRowMapper instance = new SpendEntityRowMapper();
+    public static final SpendEntityRowMapper INSTANCE = new SpendEntityRowMapper();
     private static final Config CFG = Config.getInstance();
 
     private SpendEntityRowMapper() {

@@ -89,6 +89,18 @@ public class SpendDbClient {
                                                                           .orElseThrow(() -> new RuntimeException("Category not found")));
         }, CFG.spendJdbcUrl());
     }
+
+    public List<CategoryEntity> findAllCategories() {
+        return transaction(connection -> {
+            return new CategoryDaoJdbc(connection).findAll();
+        }, CFG.spendJdbcUrl());
+    }
+
+    public List<SpendEntity> findAllSpends() {
+        return transaction(connection -> {
+            return new SpendDaoJdbc(connection).findAll();
+        }, CFG.spendJdbcUrl());
+    }
     //</editor-fold>
 
 
@@ -105,14 +117,14 @@ public class SpendDbClient {
 
     public SpendJson findSpendByIdSpringJdbc(UUID id) {
         return SpendJson.fromEntity(new SpendDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findSpendById(id)
-                                                                                         .orElseThrow(() -> new RuntimeException("Spend not found")));
+                                                                                          .orElseThrow(() -> new RuntimeException("Spend not found")));
     }
 
     public List<SpendJson> findAllByUsernameSpringJdbc(String username) {
         return new SpendDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findAllByUsername(username)
-                                                                    .stream()
-                                                                    .map(SpendJson::fromEntity)
-                                                                    .toList();
+                                                                     .stream()
+                                                                     .map(SpendJson::fromEntity)
+                                                                     .toList();
     }
 
     public int deleteSpendSpringJdbc(SpendEntity spend) {
@@ -125,14 +137,14 @@ public class SpendDbClient {
 
     public CategoryJson findCategoryByUsernameAndCategoryNameSpringJdbc(String username, String categoryName) {
         return CategoryJson.fromEntity(new CategoryDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findCategoryByUsernameAndCategoryName(username, categoryName)
-                                                                                           .orElseThrow(() -> new RuntimeException("Category not found")));
+                                                                                                .orElseThrow(() -> new RuntimeException("Category not found")));
     }
 
     public List<CategoryJson> findAllCategoriesByUsernameSpringJdbc(String username) {
         return new CategoryDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findAllByUsername(username)
-                                                                      .stream()
-                                                                      .map(CategoryJson::fromEntity)
-                                                                      .toList();
+                                                                        .stream()
+                                                                        .map(CategoryJson::fromEntity)
+                                                                        .toList();
     }
 
     public int deleteCategorySpringJdbc(CategoryJson category) {
@@ -141,7 +153,15 @@ public class SpendDbClient {
 
     public CategoryJson updateCategorySpringJdbc(CategoryJson category) {
         return CategoryJson.fromEntity(new CategoryDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).updateCategory(CategoryEntity.fromJson(category))
-                                                                                           .orElseThrow(() -> new RuntimeException("Category not found")));
+                                                                                                .orElseThrow(() -> new RuntimeException("Category not found")));
+    }
+
+    public List<CategoryEntity> findAllCategoriesSpringJdbc() {
+        return new CategoryDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findAll();
+    }
+
+    public List<SpendEntity> findAllSpendsSpringJdbc() {
+        return new SpendDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findAll();
     }
     //</editor-fold>
 }

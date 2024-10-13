@@ -48,7 +48,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject("SELECT * FROM category WHERE id = ?",
-                                            CategoryEntityRowMapper.instance,
+                                            CategoryEntityRowMapper.INSTANCE,
                                             id)
         );
     }
@@ -57,14 +57,14 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String categoryName) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM category WHERE username = ? AND name = ?",
-                                                               CategoryEntityRowMapper.instance, username, categoryName));
+                                                               CategoryEntityRowMapper.INSTANCE, username, categoryName));
     }
 
     @Override
     public List<CategoryEntity> findAllByUsername(String username) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return jdbcTemplate.query("SELECT * FROM category WHERE username = ?",
-                                  CategoryEntityRowMapper.instance, username);
+                                  CategoryEntityRowMapper.INSTANCE, username);
     }
 
     @Override
@@ -79,5 +79,11 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
         jdbcTemplate.update("UPDATE category SET name = ?, username = ?, archived = ? WHERE id = ?",
                             category.getName(), category.getUsername(), category.isArchived(), category.getId());
         return Optional.of(category);
+    }
+
+    @Override
+    public List<CategoryEntity> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query("SELECT * FROM category", CategoryEntityRowMapper.INSTANCE);
     }
 }

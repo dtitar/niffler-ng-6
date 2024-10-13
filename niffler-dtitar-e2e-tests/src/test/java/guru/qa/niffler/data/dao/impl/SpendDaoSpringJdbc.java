@@ -52,7 +52,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     public Optional<SpendEntity> findSpendById(UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM spend WHERE id = ?",
-                                                               SpendEntityRowMapper.instance,
+                                                               SpendEntityRowMapper.INSTANCE,
                                                                id)
         );
     }
@@ -61,7 +61,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     public List<SpendEntity> findAllByUsername(String username) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return jdbcTemplate.query("SELECT * FROM spend WHERE username = ?",
-                                  SpendEntityRowMapper.instance,
+                                  SpendEntityRowMapper.INSTANCE,
                                   username);
     }
 
@@ -69,5 +69,11 @@ public class SpendDaoSpringJdbc implements SpendDao {
     public int deleteSpend(SpendEntity spend) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return jdbcTemplate.update("DELETE FROM spend WHERE id = ?", spend.getId());
+    }
+
+    @Override
+    public List<SpendEntity> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query("SELECT * FROM spend", SpendEntityRowMapper.INSTANCE);
     }
 }
