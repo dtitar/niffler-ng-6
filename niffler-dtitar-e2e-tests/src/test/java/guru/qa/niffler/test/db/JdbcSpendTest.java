@@ -1,4 +1,4 @@
-package guru.qa.niffler.test.web._temp;
+package guru.qa.niffler.test.db;
 
 import com.github.javafaker.Faker;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
@@ -99,5 +99,17 @@ public class JdbcSpendTest {
                 true
         ));
         System.out.println(updatedCategory);
+    }
+
+    @Test
+    void findAllCategoriesTest() {
+        spendDbClient.findAllCategories()
+                     .forEach(System.out::println);
+    }
+
+    @Test
+    void finfAllSpendsTest() {
+        spendDbClient.findAllSpends()
+                     .forEach(System.out::println);
     }
 }

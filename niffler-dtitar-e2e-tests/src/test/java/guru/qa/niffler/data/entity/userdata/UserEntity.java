@@ -2,6 +2,7 @@ package guru.qa.niffler.data.entity.userdata;
 
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +10,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 public class UserEntity implements Serializable {
     private UUID id;
     private String username;
@@ -33,5 +33,17 @@ public class UserEntity implements Serializable {
         entity.setPhotoSmall(json.photoSmall() != null ? json.photoSmall()
                                                              .getBytes(StandardCharsets.UTF_8) : null);
         return entity;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", currency=" + currency +
+                ", firstname='" + firstname + '\'' +
+                ", surname='" + surname + '\'' +
+                ", fullName='" + fullName + '\'' +
+                '}';
     }
 }
