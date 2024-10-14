@@ -150,9 +150,12 @@ public class UsersDbClient {
         }, CFG.authJdbcUrl());
     }
 
-    public List<UserEntity> findAllUdUsers() {
+    public List<UserJson> findAllUdUsers() {
         return transaction(connection -> {
-            return new UdUserDaoJdbc().findAll();
+            return new UdUserDaoJdbc().findAll()
+                                      .stream()
+                                      .map(u -> UserJson.fromEntity(u, null))
+                                      .toList();
         }, CFG.userdataJdbcUrl());
     }
     //</editor-fold>
