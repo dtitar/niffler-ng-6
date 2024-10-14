@@ -79,12 +79,18 @@ public class SpendDbClient {
                                                                   .orElseThrow(() -> new RuntimeException("Category not found")));
     }
 
-    public List<CategoryEntity> findAllCategoriesSpringJdbc() {
-        return new CategoryDaoSpringJdbc().findAll();
+    public List<CategoryJson> findAllCategoriesSpringJdbc() {
+        return new CategoryDaoSpringJdbc().findAll()
+                                          .stream()
+                                          .map(CategoryJson::fromEntity)
+                                          .toList();
     }
 
-    public List<SpendEntity> findAllSpendsSpringJdbc() {
-        return new SpendDaoSpringJdbc().findAll();
+    public List<SpendJson> findAllSpendsSpringJdbc() {
+        return new SpendDaoSpringJdbc().findAll()
+                                       .stream()
+                                       .map(SpendJson::fromEntity)
+                                       .toList();
     }
     //</editor-fold>
 
@@ -154,21 +160,23 @@ public class SpendDbClient {
     }
 
     public CategoryJson updateCategory(CategoryJson category) {
-        return jdbcTxTemplate.execute(() -> {
-            return CategoryJson.fromEntity(new CategoryDaoJdbc().updateCategory(CategoryEntity.fromJson(category))
-                                                                .orElseThrow(() -> new RuntimeException("Category not found")));
-        });
+        return jdbcTxTemplate.execute(() -> CategoryJson.fromEntity(new CategoryDaoJdbc().updateCategory(CategoryEntity.fromJson(category))
+                                                                                         .orElseThrow(() -> new RuntimeException("Category not found"))));
     }
 
-    public List<CategoryEntity> findAllCategories() {
-        return jdbcTxTemplate.execute(() -> {
-            return new CategoryDaoJdbc().findAll();
-        });
+    public List<CategoryJson> findAllCategories() {
+        return jdbcTxTemplate.execute(() -> new CategoryDaoJdbc().findAll()
+                                                                 .stream()
+                                                                 .map(CategoryJson::fromEntity)
+                                                                 .toList());
     }
 
-    public List<SpendEntity> findAllSpends() {
+    public List<SpendJson> findAllSpends() {
         return jdbcTxTemplate.execute(() -> {
-            return new SpendDaoJdbc().findAll();
+            return new SpendDaoJdbc().findAll()
+                                     .stream()
+                                     .map(SpendJson::fromEntity)
+                                     .toList();
         });
     }
     //</editor-fold>
