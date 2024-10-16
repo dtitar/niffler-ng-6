@@ -12,6 +12,25 @@ public class SpringJdbcUsersTest {
     private final UsersDbClient usersDbClient = new UsersDbClient();
 
     @Test
+    void createUserChainedTransactionManagerTest() {
+        usersDbClient.createUserChainedTransactionManager(new UserJson(
+                null,
+                "randy" + faker.number()
+                                  .randomNumber(),
+                CurrencyValues.KZT,
+                faker.name()
+                     .firstName(),
+                faker.name()
+                     .lastName(),
+                faker.name()
+                     .fullName(),
+                null,
+                null,
+                null
+        ));
+    }
+
+    @Test
     void createUserTest() {
         usersDbClient.createUserSpringJdbc(new UserJson(
                 null,
