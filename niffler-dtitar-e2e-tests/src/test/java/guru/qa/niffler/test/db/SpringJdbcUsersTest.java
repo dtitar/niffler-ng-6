@@ -31,10 +31,69 @@ public class SpringJdbcUsersTest {
     }
 
     @Test
-    void createUserTest() {
-        usersDbClient.createUserSpringJdbc(new UserJson(
+    void createUseSpringJdbcWithAtomikosTransactionTest() {
+        usersDbClient.createUserSpringJdbcWithAtomikosTransaction(new UserJson(
                 null,
-                "randy-spring-jdbc-transaction-3",
+                "randy" + faker.number()
+                               .randomNumber(),
+                CurrencyValues.KZT,
+                faker.name()
+                     .firstName(),
+                faker.name()
+                     .lastName(),
+                faker.name()
+                     .fullName(),
+                null,
+                null,
+                null
+        ));
+    }
+
+    @Test
+    void createUseSpringJdbcWithoutTransactionTest() {
+        usersDbClient.createUserSpringJdbcWithoutTransaction(new UserJson(
+                null,
+                "randy" + faker.number()
+                               .randomNumber(),
+                CurrencyValues.KZT,
+                faker.name()
+                     .firstName(),
+                faker.name()
+                     .lastName(),
+                faker.name()
+                     .fullName(),
+                null,
+                null,
+                null
+        ));
+    }
+
+    @Test
+    void createUseJdbcWithTransactionTest() {
+        usersDbClient.createUserJdbcWithTransaction(new UserJson(
+                null,
+                "randy" + faker.number()
+                               .randomNumber(),
+                CurrencyValues.KZT,
+                faker.name()
+                     .firstName(),
+                faker.name()
+                     .lastName(),
+                faker.name()
+                     .fullName(),
+                null,
+                null,
+                null
+        ));
+    }
+
+
+    @Test
+    void createUseJdbcWithoutTransactionTest() {
+        usersDbClient.createUserJdbcWithoutTransaction(new UserJson(
+                null,
+                "randy" + faker.number()
+                               .randomNumber(),
                 CurrencyValues.KZT,
                 faker.name()
                      .firstName(),
