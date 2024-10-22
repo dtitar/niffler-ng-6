@@ -13,7 +13,7 @@ public class JdbcUsersTest {
 
     @Test
     void createUserTest() {
-        UserJson createdUser = usersDbClient.createUser(new UserJson(
+        UserJson createdUser = usersDbClient.createUserJdbcWithTransaction(new UserJson(
                 null,
                 faker.name()
                      .username(),
@@ -27,14 +27,14 @@ public class JdbcUsersTest {
                 null,
                 null,
                 null
-        ), "123123ee");
+        ));
         System.out.println(createdUser);
     }
 
     @Test
     void springJdbcTest() {
         UsersDbClient usersDbClient = new UsersDbClient();
-        UserJson createdUser = usersDbClient.createUserSpringJdbc(new UserJson(
+        UserJson createdUser = usersDbClient.createUserSpringJdbcWithAtomikosTransaction(new UserJson(
                 null,
                 "randy-2",
                 CurrencyValues.USD,
