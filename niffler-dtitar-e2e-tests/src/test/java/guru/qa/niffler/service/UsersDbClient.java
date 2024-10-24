@@ -9,7 +9,10 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.DataSources;
+import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import org.springframework.data.transaction.ChainedTransactionManager;
@@ -21,8 +24,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static guru.qa.niffler.data.Databases.transaction;
 
 public class UsersDbClient {
     private static final Config CFG = Config.getInstance();
@@ -36,6 +37,11 @@ public class UsersDbClient {
     private final AuthAuthorityDao authAuthorityDaoJdbc = new AuthAuthorityDaoSpringJdbc();
     private final UdUserDao udUserDaoJdbc = new UdUserDaoJdbc();
 
+    private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
+
+    private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
+            CFG.spendJdbcUrl()
+    );
     private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
             CFG.authJdbcUrl(),
             CFG.userdataJdbcUrl()
@@ -68,8 +74,7 @@ public class UsersDbClient {
                                                                                   .map(
                                                                                           e -> {
                                                                                               AuthorityEntity ae = new AuthorityEntity();
-//                                                                                              ae.setUserId(createdAuthUser.getId());
-                                                                                              ae.setUserId(null);
+                                                                                              ae.setUser(createdAuthUser);
                                                                                               ae.setAuthority(e);
                                                                                               return ae;
                                                                                           }
@@ -85,6 +90,33 @@ public class UsersDbClient {
     }
 
     //<editor-fold desc="Spring JDBC">
+    public UserJson createUserRepository(UserJson user) {
+        return xaTransactionTemplate.execute(() -> {
+                                                 AuthUserEntity authUser = new AuthUserEntity();
+                                                 authUser.setUsername(user.username());
+                                                 authUser.setPassword(pe.encode("123123ee"));
+                                                 authUser.setEnabled(true);
+                                                 authUser.setAccountNonExpired(true);
+                                                 authUser.setAccountNonLocked(true);
+                                                 authUser.setCredentialsNonExpired(true);
+                                                 authUser.setAuthorities(Arrays.stream(Authority.values())
+                                                                               .map(a -> {
+                                                                                        AuthorityEntity ae = new AuthorityEntity();
+                                                                                        ae.setUser(authUser);
+                                                                                        ae.setAuthority(a);
+                                                                                        return ae;
+                                                                                    }
+                                                                               )
+                                                                               .toList());
+                                                 authUserRepository.create(authUser);
+                                                 return UserJson.fromEntity(
+                                                         udUserDaoSpringJdbc.create(UserEntity.fromJson(user)),
+                                                         null
+                                                 );
+                                             }
+        );
+    }
+
     public UserJson createUserSpringJdbcWithAtomikosTransaction(UserJson user) {
         return xaTransactionTemplate.execute(() -> {
                                                  AuthUserEntity authUser = new AuthUserEntity();
@@ -99,7 +131,7 @@ public class UsersDbClient {
                                                  AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values())
                                                                                              .map(a -> {
                                                                                                       AuthorityEntity ae = new AuthorityEntity();
-                                                                                                      ae.setUserId(createdAuthUser.getId());
+                                                                                                      ae.setUser(createdAuthUser);
                                                                                                       ae.setAuthority(a);
                                                                                                       return ae;
                                                                                                   }
@@ -127,7 +159,7 @@ public class UsersDbClient {
         AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values())
                                                     .map(a -> {
                                                              AuthorityEntity ae = new AuthorityEntity();
-                                                             ae.setUserId(createdAuthUser.getId());
+                                                             ae.setUser(createdAuthUser);
                                                              ae.setAuthority(a);
                                                              return ae;
                                                          }
@@ -168,7 +200,7 @@ public class UsersDbClient {
                                                  AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values())
                                                                                              .map(a -> {
                                                                                                       AuthorityEntity ae = new AuthorityEntity();
-                                                                                                      ae.setUserId(createdAuthUser.getId());
+                                                                                                      ae.setUser(createdAuthUser);
                                                                                                       ae.setAuthority(a);
                                                                                                       return ae;
                                                                                                   }
@@ -197,7 +229,6 @@ public class UsersDbClient {
                 Arrays.stream(Authority.values())
                       .map(a -> {
                                AuthorityEntity ae = new AuthorityEntity();
-                               ae.setUserId(authUser.getId());
                                ae.setAuthority(a);
                                return ae;
                            }
@@ -205,47 +236,37 @@ public class UsersDbClient {
                       .toArray(AuthorityEntity[]::new));
         UserEntity ue = new UserEntity();
         ue.setUsername(user.username());
-        ue.setFullName(user.fullname());
+        ue.setFullname(user.fullname());
         ue.setCurrency(user.currency());
         udUserDaoJdbc.create(ue);
         return UserJson.fromEntity(ue, null);
     }
 
     public UserJson findById(UUID id) {
-        return transaction(connection -> {
-            return new UdUserDaoJdbc().findById(id)
-                                      .map(u -> UserJson.fromEntity(u, null))
-                                      .orElseThrow(() -> new RuntimeException(String.format("User with provided id '%s' not found", id.toString())));
-        }, CFG.spendJdbcUrl());
+        return udUserDaoJdbc.findById(id)
+                            .map(u -> UserJson.fromEntity(u, null))
+                            .orElseThrow(() -> new RuntimeException(String.format("User with provided id '%s' not found", id.toString())));
     }
 
     public UserJson findByUsername(String username) {
-        return transaction(connection -> {
-            return new UdUserDaoJdbc().findByUsername(username)
-                                      .map(u -> UserJson.fromEntity(u, null))
-                                      .orElseThrow(() -> new RuntimeException(String.format("User with provided username '%s' not found", username)));
-        }, CFG.spendJdbcUrl());
+        return udUserDaoJdbc.findByUsername(username)
+                            .map(u -> UserJson.fromEntity(u, null))
+                            .orElseThrow(() -> new RuntimeException(String.format("User with provided username '%s' not found", username)));
     }
 
     public List<AuthorityEntity> findAllAuthorities() {
-        return transaction(connection -> {
-            return new AuthAuthorityDaoJdbc().findAll();
-        }, CFG.authJdbcUrl());
+        return authAuthorityDaoJdbc.findAll();
     }
 
     public List<AuthUserEntity> findAllAuthUsers() {
-        return transaction(connection -> {
-            return new AuthUserDaoJdbc().findAll();
-        }, CFG.authJdbcUrl());
+        return authUserDaoJdbc.findAll();
     }
 
     public List<UserJson> findAllUdUsers() {
-        return transaction(connection -> {
-            return new UdUserDaoJdbc().findAll()
-                                      .stream()
-                                      .map(u -> UserJson.fromEntity(u, null))
-                                      .toList();
-        }, CFG.userdataJdbcUrl());
+        return udUserDaoJdbc.findAll()
+                            .stream()
+                            .map(u -> UserJson.fromEntity(u, null))
+                            .toList();
     }
 //</editor-fold>
 }

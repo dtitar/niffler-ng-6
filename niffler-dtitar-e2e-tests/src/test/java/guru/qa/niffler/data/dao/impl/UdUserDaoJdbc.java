@@ -2,8 +2,8 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UdUserDao;
+import guru.qa.niffler.data.entity.userdata.CurrencyValues;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -61,7 +61,7 @@ public class UdUserDaoJdbc implements UdUserDao {
                     ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     ue.setFirstname(rs.getString("firstname"));
                     ue.setSurname(rs.getString("surname"));
-                    ue.setFullName(rs.getString("full_name"));
+                    ue.setFullname(rs.getString("full_name"));
                     ue.setPhoto(rs.getBytes("photo"));
                     ue.setPhotoSmall(rs.getBytes("photo_small"));
                     return Optional.of(ue);
@@ -89,7 +89,7 @@ public class UdUserDaoJdbc implements UdUserDao {
                     ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     ue.setFirstname(rs.getString("firstname"));
                     ue.setSurname(rs.getString("surname"));
-                    ue.setFullName(rs.getString("full_name"));
+                    ue.setFullname(rs.getString("full_name"));
                     ue.setPhoto(rs.getBytes("photo"));
                     ue.setPhotoSmall(rs.getBytes("photo_small"));
                     return Optional.of(ue);
@@ -128,7 +128,7 @@ public class UdUserDaoJdbc implements UdUserDao {
                     ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                     ue.setFirstname(rs.getString("firstname"));
                     ue.setSurname(rs.getString("surname"));
-                    ue.setFullName(rs.getString("full_name"));
+                    ue.setFullname(rs.getString("full_name"));
                     ue.setPhoto(rs.getBytes("photo"));
                     ue.setPhotoSmall(rs.getBytes("photo_small"));
                     users.add(ue);

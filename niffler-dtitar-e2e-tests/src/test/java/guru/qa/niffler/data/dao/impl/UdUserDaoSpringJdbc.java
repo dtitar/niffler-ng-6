@@ -36,7 +36,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
             ps.setString(4, user.getSurname());
             ps.setBytes(5, user.getPhoto());
             ps.setBytes(6, user.getPhotoSmall());
-            ps.setString(7, user.getFullName());
+            ps.setString(7, user.getFullname());
             return ps;
         }, kh);
 
