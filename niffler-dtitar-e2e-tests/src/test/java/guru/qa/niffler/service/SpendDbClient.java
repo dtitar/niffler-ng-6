@@ -15,8 +15,6 @@ import guru.qa.niffler.model.SpendJson;
 import java.util.List;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.Databases.transaction;
-
 public class SpendDbClient {
     private static final Config CFG = Config.getInstance();
 
@@ -126,9 +124,9 @@ public class SpendDbClient {
     }
 
     public int deleteSpend(SpendEntity spend) {
-        return transaction(connection -> {
+        return jdbcTxTemplate.execute(() -> {
             return new SpendDaoJdbc().deleteSpend(spend);
-        }, CFG.spendJdbcUrl());
+        });
     }
 
     public CategoryJson createCategory(CategoryJson category) {

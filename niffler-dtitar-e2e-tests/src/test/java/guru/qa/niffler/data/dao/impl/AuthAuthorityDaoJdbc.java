@@ -25,7 +25,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                                                                      "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)",
                                                                      PreparedStatement.RETURN_GENERATED_KEYS)) {
             for (AuthorityEntity a : authority) {
-                ps.setObject(1, a.getUserId());
+                ps.setObject(1, a.getId());
                 ps.setString(2, a.getAuthority()
                                  .name());
                 ps.addBatch();
@@ -49,7 +49,6 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                 while (rs.next()) {
                     AuthorityEntity se = new AuthorityEntity();
                     se.setId(rs.getObject("id", UUID.class));
-                    se.setUserId(rs.getObject("id", UUID.class));
                     se.setAuthority(Authority.valueOf(rs.getString("authority")));
                     authorities.add(se);
                 }

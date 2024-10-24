@@ -11,8 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.Databases.dataSource;
-
 public class SpendEntityRowMapper implements RowMapper<SpendEntity> {
 
     public static final SpendEntityRowMapper INSTANCE = new SpendEntityRowMapper();
