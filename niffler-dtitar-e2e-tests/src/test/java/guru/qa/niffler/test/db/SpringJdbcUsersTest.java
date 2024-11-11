@@ -1,7 +1,7 @@
 package guru.qa.niffler.test.db;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.data.entity.userdata.CurrencyValues;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,26 @@ public class SpringJdbcUsersTest {
 
     protected static final Faker faker = new Faker();
     private final UsersDbClient usersDbClient = new UsersDbClient();
+
+    @Test
+    void createUserWithRepository() {
+        UserJson createdUser = usersDbClient.createUserRepository(new UserJson(
+                null,
+                faker.name()
+                     .username(),
+                CurrencyValues.KZT,
+                faker.name()
+                     .firstName(),
+                faker.name()
+                     .lastName(),
+                faker.name()
+                     .fullName(),
+                null,
+                null,
+                null
+        ));
+        System.out.println(createdUser);
+    }
 
     @Test
     void createUserChainedTransactionManagerTest() {

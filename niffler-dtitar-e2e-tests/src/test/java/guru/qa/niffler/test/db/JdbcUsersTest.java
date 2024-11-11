@@ -1,7 +1,7 @@
 package guru.qa.niffler.test.db;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.data.entity.userdata.CurrencyValues;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
