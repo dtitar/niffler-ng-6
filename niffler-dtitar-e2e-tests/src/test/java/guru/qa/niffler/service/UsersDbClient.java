@@ -58,7 +58,35 @@ public class UsersDbClient {
             )
     );
 
+
     //<editor-fold desc="Spring JDBC">
+    public UserJson createUserRepository(UserJson user) {
+        return xaTransactionTemplate.execute(() -> {
+                                                 AuthUserEntity authUser = new AuthUserEntity();
+                                                 authUser.setUsername(user.username());
+                                                 authUser.setPassword(pe.encode("123123ee"));
+                                                 authUser.setEnabled(true);
+                                                 authUser.setAccountNonExpired(true);
+                                                 authUser.setAccountNonLocked(true);
+                                                 authUser.setCredentialsNonExpired(true);
+                                                 authUser.setAuthorities(Arrays.stream(Authority.values())
+                                                                               .map(a -> {
+                                                                                        AuthorityEntity ae = new AuthorityEntity();
+                                                                                        ae.setUser(authUser);
+                                                                                        ae.setAuthority(a);
+                                                                                        return ae;
+                                                                                    }
+                                                                               )
+                                                                               .toList());
+                                                 authUserRepository.create(authUser);
+                                                 return UserJson.fromEntity(
+                                                         udUserDaoSpringJdbc.create(UserEntity.fromJson(user)),
+                                                         null
+                                                 );
+                                             }
+        );
+    }
+
     public UserJson createUserChainedTransactionManager(UserJson user) {
         return txTemplate.execute(status -> {
                                       AuthUserEntity authUser = new AuthUserEntity();
@@ -86,34 +114,6 @@ public class UsersDbClient {
                                               null
                                       );
                                   }
-        );
-    }
-
-    //<editor-fold desc="Spring JDBC">
-    public UserJson createUserRepository(UserJson user) {
-        return xaTransactionTemplate.execute(() -> {
-                                                 AuthUserEntity authUser = new AuthUserEntity();
-                                                 authUser.setUsername(user.username());
-                                                 authUser.setPassword(pe.encode("123123ee"));
-                                                 authUser.setEnabled(true);
-                                                 authUser.setAccountNonExpired(true);
-                                                 authUser.setAccountNonLocked(true);
-                                                 authUser.setCredentialsNonExpired(true);
-                                                 authUser.setAuthorities(Arrays.stream(Authority.values())
-                                                                               .map(a -> {
-                                                                                        AuthorityEntity ae = new AuthorityEntity();
-                                                                                        ae.setUser(authUser);
-                                                                                        ae.setAuthority(a);
-                                                                                        return ae;
-                                                                                    }
-                                                                               )
-                                                                               .toList());
-                                                 authUserRepository.create(authUser);
-                                                 return UserJson.fromEntity(
-                                                         udUserDaoSpringJdbc.create(UserEntity.fromJson(user)),
-                                                         null
-                                                 );
-                                             }
         );
     }
 
