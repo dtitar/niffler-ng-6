@@ -2,10 +2,10 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.CategoryDao;
-import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
-import guru.qa.niffler.data.dao.impl.CategoryDaoSpringJdbc;
-import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
-import guru.qa.niffler.data.dao.impl.SpendDaoSpringJdbc;
+import guru.qa.niffler.data.dao.impl.jdbc.CategoryDaoJdbc;
+import guru.qa.niffler.data.dao.impl.springJdbc.CategoryDaoSpringJdbc;
+import guru.qa.niffler.data.dao.impl.jdbc.SpendDaoJdbc;
+import guru.qa.niffler.data.dao.impl.springJdbc.SpendDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
