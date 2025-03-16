@@ -8,14 +8,10 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.AuthUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.AuthUserRepositorySpringJdbc;
 import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.UserdataUserRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.rest.CurrencyValues;
-import guru.qa.niffler.model.rest.FriendState;
+import guru.qa.niffler.model.rest.FriendshipStatus;
 import guru.qa.niffler.model.rest.TestData;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.UsersClient;
@@ -26,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
+import java.util.List;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 import static java.util.Objects.requireNonNull;
@@ -37,13 +34,22 @@ public class UsersDbClient implements UsersClient {
   private static final String defaultPassword = "12345";
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-  private final AuthUserRepository authUserRepository = new AuthUserRepositorySpringJdbc();
-  private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositorySpringJdbc();
+  private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
+  private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(),
       CFG.userdataJdbcUrl()
   );
+
+  @Override
+  public List<UserJson> all() {
+    return authUserRepository.all().stream()
+        .map(e -> new UserJson(
+            e.getUsername()
+        ))
+        .toList();
+  }
 
   @Nonnull
   @Override
@@ -86,7 +92,7 @@ public class UsersDbClient implements UsersClient {
                             }
                         )
                     ),
-                    FriendState.INVITE_RECEIVED
+                    FriendshipStatus.INVITE_RECEIVED
                 )
             );
       }
@@ -116,7 +122,7 @@ public class UsersDbClient implements UsersClient {
                             }
                         )
                     ),
-                    FriendState.INVITE_RECEIVED
+                    FriendshipStatus.INVITE_RECEIVED
                 )
             );
       }
@@ -146,7 +152,7 @@ public class UsersDbClient implements UsersClient {
                             }
                         )
                     ),
-                    FriendState.FRIEND
+                    FriendshipStatus.FRIEND
                 )
             );
       }
